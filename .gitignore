@@ -1,3 +1,9 @@
+# AI Tool Folders
+.claude/
+.cursor/
+.devin/
+.agent/
+.windsurf/
 # Dependencies
 node_modules/
 .pnp
@@ -22,4 +28,9 @@ yarn-error.log*
 
 # OS files
 .DS_Store
-Thumbs.db
+Thumbs.db.agents/
+.claude/
+.cursor/
+.devin/
+.agent/
+.windsurf/
