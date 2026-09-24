@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PASSENGER
+  DRIVER
+}
+
+enum RideStatus {
+  REQUESTED
+  MATCHED
+  DRIVER_ARRIVED
+  STARTED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  phone        String        @unique
+  role         Role
+  createdAt    DateTime      @default(now())
+  
+  vehicle      Vehicle?
+  rideRequests RideRequest[]
+
+  @@map("users")
+}
+
+model Vehicle {
+  id         String   @id @default(uuid())
+  modelName  String   @default("Bullet")
+  capacity   Int      @default(3)
+  isOnline   Boolean  @default(false)
+  driverId   String   @unique
+  driver     User     @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  pools      Pool[]
+
+  @@map("vehicles")
+}
+
+model Pool {
+  id               String        @id @default(uuid())
+  vehicleId        String
+  vehicle          Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  pickupZone       String
+  corridor         String
+  status           RideStatus    @default(REQUESTED)
+  totalSeatsBooked Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  
+  rideRequests     RideRequest[]
+
+  @@map("pools")
+}
+
+model RideRequest {
+  id              String      @id @default(uuid())
+  passengerId     String
+  passenger       User        @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+  poolId          String?     
+  pool            Pool?       @relation(fields: [poolId], references: [id], onDelete: SetNull)
+  
+  pickupZone      String
+  destinationZone String
+  seatsRequested  Int         @default(1)
+  farePoysha      Int         
+  status          RideStatus  @default(REQUESTED)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("ride_requests")
+}
