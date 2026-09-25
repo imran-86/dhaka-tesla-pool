@@ -2,8 +2,16 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
 import { PoolService } from '../services/pool.services';
+import { FareService } from '../services/fair.service';
 
 const prisma = new PrismaClient();
+
+// এস্টিমেশনের জন্য ইনপুট স্কিমা
+export const estimateFareSchema = z.object({
+  pickupZone: z.string().min(1, { message: 'পিকআপ জোন আবশ্যক' }),
+  destinationZone: z.string().min(1, { message: 'গন্তব্য জোন আবশ্যক' }),
+  isPooled: z.boolean().optional().default(true),
+});
 
 // বুকিংয়ের জন্য Zod স্কিমা
 export const bookRideSchema = z.object({
@@ -14,6 +22,27 @@ export const bookRideSchema = z.object({
 });
 
 export class PassengerController {
+   
+   /**
+   * Formula: passengerFare = baseFare + distanceCharge - poolDiscount
+   */
+  static async estimateFare(req: Request, res: Response) {
+    try {
+      const { pickupZone, destinationZone, isPooled } = req.body;
+      const fareBreakdown = FareService.calculateFare(pickupZone, destinationZone, isPooled);
+
+      res.status(200).json({
+        status: 'success',
+        message: 'ভাড়ার বিবরণ সফলভাবে নির্ণয় করা হয়েছে',
+        data: fareBreakdown,
+      });
+    } catch (error: any) {
+      res.status(400).json({ status: 'fail', message: error.message });
+    }
+  }
+
+
+
   // ১. রাইড বুক ও পুলে জয়েন করার রিকোয়েস্ট
   static async bookRide(req: Request, res: Response) {
     try {
