@@ -1,4 +1,5 @@
 import { PrismaClient, Role } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -9,6 +10,9 @@ async function main() {
   await prisma.pool.deleteMany();
   await prisma.vehicle.deleteMany();
   await prisma.user.deleteMany();
+  // Common hashed password for all seed demo accounts
+  const defaultPassword = 'Tesla@123';
+  const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
   console.log('🚗 Seeding driver and Tesla vehicle (Bullet)...');
   // 1. Create Driver: Jashim
@@ -16,6 +20,7 @@ async function main() {
     data: {
       name: 'Jashim',
       phone: '01710000001',
+      password: hashedPassword,
       role: Role.DRIVER,
       vehicle: {
         create: {
@@ -36,6 +41,7 @@ async function main() {
     data: {
       name: 'Nusrat',
       phone: '01810000001',
+      password: hashedPassword,
       role: Role.PASSENGER,
     },
   });
@@ -45,6 +51,7 @@ async function main() {
     data: {
       name: 'Rafiq',
       phone: '01910000001',
+      password: hashedPassword,
       role: Role.PASSENGER,
     },
   });
@@ -54,6 +61,7 @@ async function main() {
     data: {
       name: 'Shirin',
       phone: '01610000001',
+      password: hashedPassword,
       role: Role.PASSENGER,
     },
   });
