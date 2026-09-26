@@ -1,11 +1,10 @@
-// frontend/src/components/shared/Navbar.tsx
 'use client';
 
 import React from 'react';
 import { UserSession } from '@/types/auth.types';
 import { PersonaBadge } from './PersonaBadge';
 import { logoutAction } from '@/actions/auth.actions';
-import { Zap, LogOut } from 'lucide-react';
+import { Zap, LogOut, History, Car } from 'lucide-react';
 import Link from 'next/link';
 
 interface NavbarProps {
@@ -13,6 +12,8 @@ interface NavbarProps {
 }
 
 export function Navbar({ user }: NavbarProps) {
+  const isPassenger = user?.role === 'PASSENGER';
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
@@ -41,6 +42,27 @@ export function Navbar({ user }: NavbarProps) {
         <div className="flex items-center gap-3">
           {user ? (
             <>
+              {/* Passenger Navigation Links */}
+              {isPassenger && (
+                <div className="flex items-center gap-1.5 mr-1">
+                  <Link
+                    href="/passenger"
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-xs text-slate-300 hover:text-white hover:border-slate-700 transition"
+                  >
+                    <Car className="w-3.5 h-3.5 text-red-400" />
+                    <span className="hidden md:inline">নতুন বুকিং</span>
+                  </Link>
+
+                  <Link
+                    href="/passenger/history"
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-xs text-slate-300 hover:text-white hover:border-slate-700 transition"
+                  >
+                    <History className="w-3.5 h-3.5 text-sky-400" />
+                    <span>রাইড হিস্টোরি</span>
+                  </Link>
+                </div>
+              )}
+
               <PersonaBadge
                 name={user.name}
                 role={user.role}
@@ -48,6 +70,7 @@ export function Navbar({ user }: NavbarProps) {
                 vehicleModel={user.vehicle?.modelName}
                 capacity={user.vehicle?.capacity}
               />
+
               <button
                 type="button"
                 onClick={() => logoutAction()}

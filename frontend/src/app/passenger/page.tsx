@@ -1,14 +1,15 @@
+// frontend/src/app/passenger/page.tsx
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { getSessionAction } from '@/actions/auth.actions';
+// import { BookingForm } from '@/components/passenger/BookingForm';
+import { ShieldAlert, History } from 'lucide-react';
+import Link from 'next/link';
 import { BookingForm } from '@/components/passengers/BookingForm';
-
-import { ShieldAlert } from 'lucide-react';
 
 export default async function PassengerDashboardPage() {
   const session = await getSessionAction();
 
-  // Route protection
   if (!session) {
     redirect('/');
   }
@@ -29,10 +30,20 @@ export default async function PassengerDashboardPage() {
           <h1 className="text-xl font-bold text-white">প্যাসেঞ্জার ড্যাশবোর্ড</h1>
           <p className="text-xs text-slate-400">স্বাগতম, {session.name} ({session.phone})</p>
         </div>
+        <Link
+          href="/passenger/history"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900 text-xs text-slate-300 hover:text-white hover:border-slate-700 transition"
+        >
+          <History className="w-3.5 h-3.5 text-sky-400" />
+          <span>সকল রাইড হিস্টোরি</span>
+        </Link>
       </div>
 
-      {/* The interactive booking form containing FareCard */}
-      <BookingForm passengerId={session.id} defaultPickup="Banani" defaultDestination="Mohakhali" />
+      <BookingForm
+        passengerId={session.id}
+        defaultPickup="Banani"
+        defaultDestination="Mohakhali"
+      />
     </div>
   );
 }
