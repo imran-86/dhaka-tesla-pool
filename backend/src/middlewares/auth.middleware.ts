@@ -23,7 +23,10 @@ export const authenticateToken = (
   next: NextFunction
 ): void => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const headerToken = authHeader && authHeader.split(' ')[1];
+  const cookieToken = req.cookies?.['tesla_token'];
+
+  const token = headerToken || cookieToken;
 
   if (!token) {
     res.status(401).json({
