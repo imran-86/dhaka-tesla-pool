@@ -10,10 +10,11 @@ interface FareCardProps {
 }
 
 export function FareCard({ fare, loading }: FareCardProps) {
-  if (loading) {
+  // ✅ Empty state (no route selected)
+  if (!loading && !fare) {
     return (
-      <div className="p-4 rounded-xl border border-slate-800 bg-slate-900/60 animate-pulse text-xs text-slate-400">
-        ভাড়া গণনা করা হচ্ছে...
+      <div className="p-4 rounded-2xl border border-dashed border-slate-800 bg-slate-900/40 text-xs text-slate-500 text-center">
+        পিকআপ ও গন্তব্য নির্বাচন করুন
       </div>
     );
   }
